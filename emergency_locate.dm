@@ -1,5 +1,5 @@
 diag_mod(emergency_locate(Places, Locations, Messages, Position),
-[
+ [
 	[
 	   id ==> is,
 	   type ==> neutral,
@@ -29,10 +29,9 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	[
 	  id ==> fps,
 	  type ==> recursive,
-	  embedded_dm ==> find(gesture,X,Locations,[-20,0,20],[-30,0,30],3,Found_Objects,Remaining_Positions,yes,false,false,Status),
-	  diag_mod ==> emergency_locate(_,_,_,up),
+	  embedded_dm ==> find(gesture,X,Locations,[-20,0,20],[-30,0,30],3,[H|T],Remaining_Positions,yes,false,false,Status),
 	  arcs ==> [
-	       success : [say('i succeeded in locating the person')] => success,
+	       success : [say('i succeeded in locating the person')] => up(H),
 	       error : empty => verify_error(Status)
 	  ]
 	],
@@ -40,9 +39,8 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	[
 	  id ==> verify_error(navigation_error),
 	  type ==> neutral,
-	  diag_mod ==> emergency_locate(_,_,_,down),
 	  arcs ==> [
-	       empty : [say('i succeeded in locating the person')] => success
+	       empty : [say('i succeeded in locating the person')] => get_curr_pos
 	  ]
 	],
 
@@ -54,11 +52,26 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	  ]
 	],
 
+	% Guardar posicion actual
+	[  
+    	  id ==> get_curr_pos,
+   	  type ==> positionxyz,
+    	  arcs ==> [
+      	       pos(X,Y,Z) : empty => down([X,Y,Z])
+    	  ]
+  	],
+
 	%Final situations
 	[
-	  id ==> success,
+	  id ==> up(Person_posit),
+	  type ==> final
+	],
+
+	[
+	  id ==> down(Person_posit),
 	  type ==> final
 	]
+
 ],
 % List of local variables
 [
