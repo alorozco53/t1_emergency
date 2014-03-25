@@ -1,5 +1,5 @@
-diag_mod(emergency_locate(Places, Locations, Messages, Position),
- [
+diag_mod(emergency_locate(Places, Locations, Messages),
+[
 	[
 	   id ==> is,
 	   type ==> neutral,
@@ -12,7 +12,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	  id ==> ms([],X),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : empty => fps
+	       empty : empty => fps(person,detect_with_approach)
 	  ]
 	],
 
@@ -27,9 +27,9 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	],
 
 	[
-	  id ==> fps,
+	  id ==> fps(Mode,Category),
 	  type ==> recursive,
-	  embedded_dm ==> find(gesture,X,Locations,[-20,0,20],[-30,0,30],3,[H|T],Remaining_Positions,yes,false,false,Status),
+	  embedded_dm ==> find(Mode,X,Locations,[-20,0,20],[-30,0,30],Category,[H|T],Remaining_Positions,yes,false,false,Status),
 	  arcs ==> [
 	       success : [say('i succeeded in locating the person')] => up(H),
 	       error : empty => verify_error(Status)
@@ -48,7 +48,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
 	  id ==> verify_error(Error),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('let me try to find the person again')] => fps
+	       empty : [say('let me try to find the person again')] => fps(gesture,3)
 	  ]
 	],
 
@@ -61,7 +61,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Position),
     	  ]
   	],
 
-	%Final situations
+	% Final situations
 	[
 	  id ==> up(Person_posit),
 	  type ==> final
