@@ -12,7 +12,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> ms([],X),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : empty => fps(person,detect_with_approach)
+	       empty : [execute('scripts/personvisual.sh')] => fps(person,detect_with_approach)
 	  ]
 	],
 
@@ -31,7 +31,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  type ==> recursive,
 	  embedded_dm ==> find(Mode,X,Locations,[-20,0,20],[-30,0,30],Category,[H|T],Remaining_Positions,yes,false,false,Status),
 	  arcs ==> [
-	       success : [say('i succeeded in locating the person')] => up(H),
+	       success : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh')] => up(H),
 	       error : empty => verify_error(Status)
 	  ]
 	],
@@ -40,7 +40,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(navigation_error),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('i succeeded in locating the person')] => get_curr_pos
+	       empty : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh')] => get_curr_pos
 	  ]
 	],
 
@@ -48,7 +48,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(Error),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('let me try to find the person again')] => fps(gesture,3)
+	       empty : [execute('scripts/killvisual.sh'),say('let me try to find the person again'),execute('scripts/upfollow.sh')] => fps(gesture,3)
 	  ]
 	],
 
