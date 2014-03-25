@@ -13,8 +13,8 @@ diag_mod(emergency_main,
 	  type ==> recursive,
 	  embedded_dm ==> emergency_locate([p1,p2],[p2,p3],['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Position) : empty => accident(up,Position),
-	       down(Position) : empty => accident(down,Position)
+	       up(Position) : [sleep(5)] => accident(up,Position),
+	       down(Position) : [sleep(5)] => accident(down,Position)
 	  ]
 	],
 

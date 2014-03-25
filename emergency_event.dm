@@ -14,7 +14,7 @@ diag_mod(emergency_event(Sit, Position),
           type ==> recursive,
           embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
           arcs ==> [
-               ok : empty => success(Output),
+               success : empty => success(Output),
                error : [say('let me try again ')] => as(Prompt,LanguageModel)
           ]
         ],
