@@ -13,23 +13,28 @@ diag_mod(emergency_main,
 	  type ==> recursive,
 	  embedded_dm ==> emergency_locate([p1,p2],[p2,p3],['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Position) : [sleep(5)] => accident(up,Position),
-	       down(Position) : [sleep(5)] => accident(down,Position)
+	       up(Position) : [set(pers_posit,Position), sleep(3)] => det_event(up,Position),
+	       down(Position) : [set(pers_posit,Position), sleep(3)] => det_event(down,Position)
 	  ]
 	],
 
 	[
-	  id ==> accident(Sit, Pers_posit),
+	  id ==> det_event(Sit, Pers_posit),
 	  type ==> recursive,
 	  embedded_dm ==> emergency_event(Sit,Pers_posit),
 	  arcs ==> [
-	       success(Output) : [say(Output)] => fs
+	       success : [say('a report of the current situation has been saved in the usb plugged into my laptop')] => request_needs
 	  ]
 	],
 
-
-
-
+	[
+	  id ==> request_needs,
+	  type ==> recursive,
+	  embedded_dm ==> emergency_person,
+	  arcs ==> [
+	       success : empty => rescue_sit
+	  ]
+	]
 
 
 
@@ -43,5 +48,6 @@ diag_mod(emergency_main,
 ],
 %Second argument: list of parameters
 [
+  pers_posit ==> ''
 ]
 ).

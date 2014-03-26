@@ -14,13 +14,21 @@ diag_mod(emergency_event(Sit, Position),
           type ==> recursive,
           embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
           arcs ==> [
-               success : empty => success(Output),
+               success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => grs(Resp),
                error : [say('let me try again ')] => as(Prompt,LanguageModel)
           ]
         ],
 
+        [
+          id ==> grs(Status_persona),
+          type ==> following,
+          arcs ==> [
+               reporte_generado(Position,get(last_scan, Angulo_Cuello),Status_persona) : [execute('scripts/actualiza_reporte.sh')] => success
+          ]
+        ],
+
 	[
-	  id ==> success(Output),
+	  id ==> success,
 	  type ==> final
 	]
 ],
