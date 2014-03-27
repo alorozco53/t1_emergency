@@ -5,7 +5,8 @@ diag_mod(emergency_event(Sit, Position),
 	  id ==> is,
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [(Sit = up -> Qs = 'hello there can you walk on your own'  | otherwise -> Qs = 'hello there can you move your legs' )] => as(Qs,yesno)
+	       empty : [(Sit = up -> Qs = 'hello there can you walk on your own'  | otherwise -> Qs = 'hello there can you move your legs' )]
+	       	       => as(Qs,yesno)
 	  ]
 	],
 
