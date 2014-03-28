@@ -18,10 +18,15 @@ diag_mod(emergency_rescue(Entry_posit, Pers_posit),
 	  ]
 	],
 
-
-
-
-
+	[
+	  id ==> gps,
+	  type ==> recursive,
+	  embedded_dm ==> guide(Pers_posit,Status),
+	  arcs ==> [
+	       success : [execute('scripts/killvisual.sh')] => success,
+	       error : [say('let me try again follow me')] => gps
+          ]
+	],
 
         [
           id ==> success,
