@@ -27,9 +27,9 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	],
 
 	[
-	  id ==> fos(Obj_locations),
+	  id ==> fos(Obj_locs),
 	  type ==> recursive,
-	  embedded_dm ==> find(object,Thing,Obj_locations,[-20,0,20],[-30,0,30],Mode,Found_obj,Remaining_Positions,false,false,false,Status),
+	  embedded_dm ==> find(object,Thing,Obj_locs,[-20,0,20],[-30,0,30],Mode,Found_obj,Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
 	       success : [say('i succeeded in finding the object i will grab it now')] => ts(right),
 	       error : [say('i did not found the object let me try again')] => fos(Obj_locations)

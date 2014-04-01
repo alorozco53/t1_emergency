@@ -4,17 +4,17 @@ diag_mod(emergency_main,
 	  id ==> is,
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [set(entry,p1)] => locate_pers
+	       empty : [set(entry,lobby)] => request_needs([1,2,3]) 
 	  ]
 	],
 
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([p1,p2],[p2,p3],['hello i am golem and i will go to the rescue','let me find the person']),
+	  embedded_dm ==> emergency_locate([p1,livingroom],[livingroom,bedroom,p3],['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Position) : [set(pers_posit,Position), sleep(3)] => det_event(up,Position),
-	       down(Position) : [set(pers_posit,Position), sleep(3)] => det_event(down,Position)
+	       up(Position) : [sleep(3)] => det_event(up,Position),
+	       down(Position) : [sleep(3)] => det_event(down,Position)
 	  ]
 	],
 
@@ -30,7 +30,7 @@ diag_mod(emergency_main,
 	[
 	  id ==> request_needs(Pers_posit),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[p2,p1],Pers_posit),
+	  embedded_dm ==> emergency_person(drink,[kitchen,diningroom],Pers_posit),
 	  arcs ==> [
 	       success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit)
 	  ]

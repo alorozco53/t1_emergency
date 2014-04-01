@@ -1,4 +1,4 @@
-diag_mod(emergency_person(LanguageToFetch, Obj_Locations, Pers_position),
+diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position),
 [
 	[
 	  id ==> is,
@@ -11,11 +11,11 @@ diag_mod(emergency_person(LanguageToFetch, Obj_Locations, Pers_position),
         [
           id ==> as(Prompt,LanguageModel),
           type ==> recursive,
-          embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
+          embedded_dm ==> ask(Prompt, LanguageModel, false, [shyte(X)], Output, Status),
           arcs ==> [
                success : [(LanguageModel = yesno -> Sit = as('so what would you like me to bring you',LanguageToFetch)
 	       	       	  | otherwise -> Sit = fetch_carry(Output))]
-	       		 => fetch_carry(Output),
+	       		 => Sit,
                error : [say('let me try again ')] => as(Prompt,LanguageModel)
           ]
         ],

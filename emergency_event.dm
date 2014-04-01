@@ -15,7 +15,7 @@ diag_mod(emergency_event(Sit, Position),
           type ==> recursive,
           embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
           arcs ==> [
-               success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => grs(Resp),
+               success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => success,
                error : [say('let me try again ')] => as(Prompt,LanguageModel)
           ]
         ],
