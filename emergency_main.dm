@@ -11,7 +11,7 @@ diag_mod(emergency_main,
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([nearexit,livingroom],[livingroom,couch_table,tv_counter],
+	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,couch_table,tv_counter],
 	                                   ['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
 	       up(Position) : [sleep(3),execute('scripts/actualiza_reporte.sh')] => det_event(up,Position),
@@ -31,7 +31,7 @@ diag_mod(emergency_main,
 	[
 	  id ==> request_needs(Pers_posit),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[bed,bedside_table,dresser],Pers_posit),
+	  embedded_dm ==> emergency_person(drink,[sideboard,bed,pantry],Pers_posit),
 	  arcs ==> [
 	       success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit)
 	  ]

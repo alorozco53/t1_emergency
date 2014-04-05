@@ -23,7 +23,7 @@ diag_mod(emergency_rescue(Entry_posit, Pers_posit),
 	  type ==> recursive,
 	  embedded_dm ==> guide(Pers_posit,Status),
 	  arcs ==> [
-	       success : [say(execute('scripts/killvisual.sh')] => success,
+	       success : [execute('scripts/killvisual.sh')] => success,
 	       error : [say('let me try again follow me')] => gps
           ]
 	],

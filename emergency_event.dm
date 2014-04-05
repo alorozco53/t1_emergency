@@ -16,7 +16,7 @@ diag_mod(emergency_event(Sit, Position),
           type ==> recursive,
           embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
           arcs ==> [
-               success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => success,
+               success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => grs(Resp),
                error : [say('let me try again ')] => as(Prompt,LanguageModel)
           ]
         ],
@@ -25,7 +25,7 @@ diag_mod(emergency_event(Sit, Position),
           id ==> grs(Status_persona),
           type ==> following,
           arcs ==> [
-               reporte_generado(Position,get(last_scan, Angulo_Cuello),Status_persona) : [execute('scripts/actualiza_reporte.sh')] => success
+               reporte_generado(p2,get(last_scan, Angulo_Cuello),Status_persona) : [execute('scripts/actualiza_reporte.sh')] => success
           ]
         ],
 

@@ -19,7 +19,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	[
 	  id ==> fos([H|T]),
 	  type ==> recursive,
-	  embedded_dm ==> find(object,[Thing],[H|T],[-20,0,20],[0,30],Mode,[FH|FT],Remaining_Positions,false,false,false,Status),
+	  embedded_dm ==> find(object,[Thing],[H|T],[-20,0,20],[-30,0],Mode,[FH|FT],Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
 	       success : [say('i succeeded in finding the object i will grab it now')] => ts(FH,left),
 	       error : [say('it is not here')] => fos(T)
@@ -29,7 +29,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	[
 	  id ==> fos(Obj_locs),
 	  type ==> recursive,
-	  embedded_dm ==> find(object,[Thing],Obj_locs,[-20,0,20],[0,30],Mode,[H|T],Remaining_Positions,false,false,false,Status),
+	  embedded_dm ==> find(object,[Thing],Obj_locs,[-20,0,20],[-30,0],Mode,[H|T],Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
 	       success : [say('i succeeded in finding the object i will grab it now')] => ts(H,left),
 	       error : [say('i did not found the object let me try again')] => fos(Obj_locations)
@@ -49,7 +49,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	[
 	  id ==> ms,
 	  type ==> recursive,
-	  embedded_dm ==> move(Pers_position,Status),
+ 	  embedded_dm ==> move(Pers_position,Status),
 	  arcs ==> [
 	       success : [say('here you have your request')] => dos,
 	       error : [say('i will try to reach the person as soon as possible')] => ms
