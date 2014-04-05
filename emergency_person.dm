@@ -25,7 +25,7 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position),
 	  type ==> recursive,
 	  embedded_dm ==> emergency_fc(Thing,Obj_locations,Pers_position),
 	  arcs ==> [
-	       X : empty => success
+	       success : empty => success
 	  ]
 	],
 
@@ -36,7 +36,7 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position),
 	]
 ],
 
-% Second argument
+% Third argument
 [
 ]
 ).

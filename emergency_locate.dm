@@ -40,7 +40,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(navigation_error),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh')] => get_curr_pos
+	       empty : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh')] => get_curr_pos(down)
 	  ]
 	],
 
@@ -54,11 +54,11 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 
 	% Guardar posicion actual
 	[  
-    	  id ==> get_curr_pos,
+    	  id ==> get_curr_pos(Pos),
    	  type ==> positionxyz,
     	  arcs ==> [
-      	       pos(X,Y,Z) : empty => down([X,Y,Z])
-    	  ]
+      	       pos(X,Y,Z) : [(Pos = up -> Sit = up([X,Y,Z]) | otherwise -> Sit = down([X,Y,Z]))] => Sit
+	  ]
   	],
 
 	% Final situations
