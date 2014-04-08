@@ -55,7 +55,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	  type ==> recursive,
 	  embedded_dm ==> move(Pers_position,Status),
 	  arcs ==> [
-               success : [say('im sorry i didnt found or couldnt grab the object')] => success
+               success : [say('im sorry i didnt found or couldnt grab the object'),execute('scripts/killvisual.sh')] => success,
 	       error : [say('i will try to reach the person as soon as possible')] => ms(false)
 	  ]
 	],
@@ -84,7 +84,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	[
           id ==> success,
 	  type ==> final
-	],
+	]
 ],
 
 % Third argument

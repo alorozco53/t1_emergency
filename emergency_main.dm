@@ -4,18 +4,20 @@ diag_mod(emergency_main,
 	  id ==> is,
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [set(entry,[p1])] => locate_pers
+	       empty : [set(entry,[nearexit])] => det_event(up,p2,[p2])
 	  ]
 	],
 
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([p1,p2],[p2,turn=>(-90),turn=>(180),tv_counter,turn=>(-90),turn=>(180)],
-	                                   ['hello i am golem and i will go to the rescue','let me find the person']),
+	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,turn=>(-90),turn=>(180),tv_counter,turn=>(-90),turn=>(180)],
+	                                   ['hello humanity my name is golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Curr_posit, Last_posit) : [sleep(3)] => det_event(up,Curr_posit,Last_posit),
-	       down(Curr_posit, Last_posit) : [sleep(3)] => det_event(down,Curr_posit, Last_posit)
+	       up(Curr_posit, Last_posit) : 
+	       [execute('scripts/personvisual.sh'),take_photo(Result),execute('scripts/killvisual.sh')] => det_event(up,Curr_posit,Last_posit),
+	       down(Curr_posit, Last_posit) : 
+	       [execute('scripts/personvisual.sh'),tiltv(-30),take_photo(Result),execute('scripts/killvisual.sh')] => det_event(down,Curr_posit, Last_posit)
 	  ]
 	],
 
@@ -51,7 +53,7 @@ diag_mod(emergency_main,
 	  type ==> final
 	]
 ],
-%Third} argument: list of parameters
+%Third argument: list of parameters
 [
   entry ==> []
 ]
