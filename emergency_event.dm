@@ -17,7 +17,7 @@ diag_mod(emergency_event(Sit, Position),
           embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
           arcs ==> [
                success : [(Output = yes -> Resp = inmovil | otherwise -> Resp = salio)] => grs(Resp),
-               error : [say('let me try again ')] => as(Prompt,LanguageModel)
+               error : [say('let me try again')] => as(Prompt,LanguageModel)
           ]
         ],
 

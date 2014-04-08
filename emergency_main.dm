@@ -11,20 +11,20 @@ diag_mod(emergency_main,
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,couch_table,tv_counter],
+	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,turn=>(-90),turn=>(90),couch_table,turn=>(-90),turn=>(90),tv_counter,turn=>(-90),turn=>(90)],
 	                                   ['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Position) : [sleep(3),execute('scripts/actualiza_reporte.sh')] => det_event(up,Position),
-	       down(Position) : [sleep(3),execute('scripts/actualiza_reporte.sh')] => det_event(down,Position)
+	       up(Curr_posit, Last_posit) : [sleep(3)] => det_event(up,Curr_posit,Last_posit),
+	       down(Curr_posit, Last_posit) : [sleep(3)] => det_event(down,Curr_posit, Last_posit)
 	  ]
 	],
 
 	[
-	  id ==> det_event(Sit, Pers_posit),
+	  id ==> det_event(Sit, Curr_posit, Last_posit),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_event(Sit,Pers_posit),
+	  embedded_dm ==> emergency_event(Sit,Last_posit),
 	  arcs ==> [
-	       success : [say('a report of the current situation has been saved in the u s b plugged into my laptop')] => request_needs(Pers_posit)
+	       success : [say('a report of the current situation has been saved in the u s b plugged into my laptop')] => request_needs(Curr_posit)
 	  ]
 	],
 
