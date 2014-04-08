@@ -4,14 +4,14 @@ diag_mod(emergency_main,
 	  id ==> is,
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [set(entry,[nearexit])] => locate_pers
+	       empty : [set(entry,[p1])] => locate_pers
 	  ]
 	],
 
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,turn=>(-90),turn=>(90),couch_table,turn=>(-90),turn=>(90),tv_counter,turn=>(-90),turn=>(90)],
+	  embedded_dm ==> emergency_locate([p1,p2],[p2,turn=>(-90),turn=>(180),tv_counter,turn=>(-90),turn=>(180)],
 	                                   ['hello i am golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
 	       up(Curr_posit, Last_posit) : [sleep(3)] => det_event(up,Curr_posit,Last_posit),
