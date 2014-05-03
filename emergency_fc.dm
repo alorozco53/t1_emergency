@@ -21,7 +21,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	  type ==> recursive,
 	  embedded_dm ==> find(object,[Thing],[H|T],[-20,0,20],[-30,0],Mode,[FH|FT],Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
-	       success : [say('i succeeded in finding the object i will grab it now'),set(not_taken,0)] => ts(FH,left),
+	       success : [say('i succeeded in finding the object i will grab it now'),set(not_taken,0)] => ts(FH,right),
 	       error : [say('i did not found the object let me try again'),inc(not_taken,Not),
 	       (Not > 3 -> Sit = ms(false) | otherwise -> Sit = fos(T))] => Sit
 	  ]
@@ -32,9 +32,9 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	  type ==> recursive,
 	  embedded_dm ==> find(object,[Thing],Obj_locs,[-20,0,20],[-30,0],Mode,[H|T],Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
-	       success : [say('i succeeded in finding the object i will grab it now'),set(not_taken,0)] => ts(H,left),
+	       success : [say('i succeeded in finding the object i will grab it now'),set(not_taken,0)] => ts(H,right),
 	       error : [say('i did not found the object let me try again'),inc(not_taken,Not),
-	       (Not > 3 -> Sit = ms(false) | otherwise -> Sit = fos(Obj_locs))] => Sit
+	       (Not > 1 -> Sit = ms(false) | otherwise -> Sit = fos(Obj_locs))] => Sit
 	  ]
 	],
 
@@ -46,7 +46,7 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
                success : [say('yoooooooooooooooooooooooopeeeeeeeeeeeeeeeeee i have the object with me')] => ms(true),
                error : [say('let me try again'),inc(not_taken,Not),
 	       (Arm = right -> Other = left | otherwise -> Other = right),
-	       (Not > 3 -> Sit = ms(false) | otherwise -> Sit = ts(Obj_list,Other))] => Sit
+	       (Not > 1 -> Sit = ms(false) | otherwise -> Sit = ts(Obj_list,Other))] => Sit
           ]
         ],
 	

@@ -9,15 +9,15 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	],
 
 	[
-	  id ==> ms([],X),
+	  id ==> ms([], X),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/personvisual.sh')] => fps(person,detect_with_approach)
+	       empty : [execute('scripts/upfollow.sh')] => fps(gesture,15)
 	  ]
 	],
 
 	[
-	  id ==> ms([H|T],[HM|TM]),
+	  id ==> ms([H|T], [HM|TM]),
 	  type ==> recursive,
 	  embedded_dm ==> move(H,Status),
 	  arcs ==> [
@@ -29,9 +29,9 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	[
 	  id ==> fps(Mode,Category),
 	  type ==> recursive,
-	  embedded_dm ==> find(Mode,X,Locations,[-20,0,20],[-30,0,30],Category,Found,Rem_Posit,yes,false,false,Status),
+	  embedded_dm ==> find(Mode,X,Locations,[-10,10],[0,-15],Category,Found,Rem_Posit,yes,false,false,Status),
 	  arcs ==> [
-	       success : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh'),arrived_posit(Locations,Rem_Posit,Cp)]
+	       success : [arrived_posit(Locations,Rem_Posit,Cp),execute('scripts/killvisual'),execute('scripts/personvisual')]
 	                 => get_curr_pos(up,Cp),
 	       error : [arrived_posit(Locations,Rem_Posit,Cp)] => verify_error(Status,Cp)
 	  ]
@@ -41,7 +41,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(navigation_error, Curr_posit),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('i succeeded in locating the person'),execute('scripts/killvisual.sh')] => get_curr_pos(down,Curr_posit)
+	       empty : [execute('scripts/killvisual'),execute('scripts/personvisual')] => get_curr_pos(down,Curr_posit)
 	  ]
 	],
 
@@ -49,7 +49,17 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(Error, Curr_posit),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/killvisual.sh'),say('let me try to find the person again'),execute('scripts/upfollow.sh')] => fps(gesture,3)
+	       empty : [execute('scripts/killvisual.sh'),say('let me try to find the person again'),execute('scripts/upfollow.sh')] => fps(gesture,15)
+	  ]
+	],
+
+	[
+	  id ==> approach_sit(Pos,[X,Y,Z]),
+	  type ==> recursive,
+	  embedded_dm ==> find(person,W,[turn=>(10),turn=>(-10)],[-10,10],[0,-15],detect_with_approach,Found,Rem_Posit,yes,yes,yes,Status),
+	  arcs ==> [
+	       success : [(Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit))] => Sit,
+	       error : [say('could you move closer to me please')] => approach_sit(Pos,[X,Y,Z])
 	  ]
 	],
 
@@ -58,7 +68,7 @@ diag_mod(emergency_locate(Places, Locations, Messages),
     	  id ==> get_curr_pos(Pos, Last_posit),
    	  type ==> positionxyz,
     	  arcs ==> [
-      	       pos(X,Y,Z) : [(Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit))] => Sit
+      	       pos(X,Y,Z) : empty => approach_sit(Pos,[X,Y,Z])
 	  ]
   	],
 
@@ -76,6 +86,10 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 ],
 % List of local variables
 [
+	rem_posit ==> [],
+	pos ==> [],
+	last_posit ==> '',
+	found_posit ==> []
 ]
 ).
 % End of dialogue

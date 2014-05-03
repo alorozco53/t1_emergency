@@ -1,23 +1,33 @@
 diag_mod(emergency_main,
 [
+
 	[
-	  id ==> is,
-	  type ==> neutral,
-	  arcs ==> [
-	       empty : [set(entry,[nearexit])] => det_event(up,p2,[p2])
-	  ]
-	],
+      		id ==> is,	
+      		type ==> neutral,
+      		arcs ==> [
+        		empty : [set(entry,[nearexitrev]),initSpeech,say('I will wait until the door is open')] => detect_door
+      			]
+    	],
+
+
+	 [  
+      		id ==> detect_door,
+      		type ==> recursive,
+      		embedded_dm ==> detect_door(Status),
+      		arcs ==> [
+        			success : [say('The door is open')] => locate_pers,
+        			error : [say('The door is still closed')] => detect_door
+				
+      			]
+    	],
 
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([nearexit,p2],[p2,turn=>(-90),turn=>(180),tv_counter,turn=>(-90),turn=>(180)],
-	                                   ['hello humanity my name is golem and i will go to the rescue','let me find the person']),
+	  embedded_dm ==> emergency_locate([nearexit,be1],[b3,be2],['hello see ooh dad dell carmen my name is golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
-	       up(Curr_posit, Last_posit) : 
-	       [execute('scripts/personvisual.sh'),take_photo(Result),execute('scripts/killvisual.sh')] => det_event(up,Curr_posit,Last_posit),
-	       down(Curr_posit, Last_posit) : 
-	       [execute('scripts/personvisual.sh'),tiltv(-30),take_photo(Result),execute('scripts/killvisual.sh')] => det_event(down,Curr_posit, Last_posit)
+	       up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit),
+	       down(Curr_posit, Last_posit) : [tiltv(-30)] => det_event(down,Curr_posit, Last_posit)
 	  ]
 	],
 
@@ -26,14 +36,14 @@ diag_mod(emergency_main,
 	  type ==> recursive,
 	  embedded_dm ==> emergency_event(Sit,Last_posit),
 	  arcs ==> [
-	       success : [say('a report of the current situation has been saved in the u s b plugged into my laptop')] => request_needs(Curr_posit)
+	       success : [say('alright')] => request_needs(Curr_posit)
 	  ]
 	],
 
 	[
 	  id ==> request_needs(Pers_posit),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[sideboard,bed,pantry],Pers_posit),
+	  embedded_dm ==> emergency_person(drink,[l3],Pers_posit),
 	  arcs ==> [
 	       success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit)
 	  ]
