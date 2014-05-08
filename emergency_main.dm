@@ -5,7 +5,7 @@ diag_mod(emergency_main,
       		id ==> is,	
       		type ==> neutral,
       		arcs ==> [
-        		empty : [set(entry,[nearexitrev]),initSpeech,say('I will wait until the door is open')] => detect_door
+        		empty : [set(entry,[p1]),initSpeech,say('I will wait until the door is open')] => detect_door
       			]
     	],
 
@@ -24,7 +24,7 @@ diag_mod(emergency_main,
 	[
 	  id ==> locate_pers,
 	  type ==> recursive,
-	  embedded_dm ==> emergency_locate([nearexit,be1],[b3,be2],['hello see ooh dad dell carmen my name is golem and i will go to the rescue','let me find the person']),
+	  embedded_dm ==> emergency_locate([p1,p2],[p2,p4,p3],['hello computer scientists my name is golem and i will go to the rescue','let me find the person']),
 	  arcs ==> [
 	       up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit),
 	       down(Curr_posit, Last_posit) : [tiltv(-30)] => det_event(down,Curr_posit, Last_posit)
@@ -43,7 +43,7 @@ diag_mod(emergency_main,
 	[
 	  id ==> request_needs(Pers_posit),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[l3],Pers_posit),
+	  embedded_dm ==> emergency_person(drink,[kitchen_table,fridge],Pers_posit),
 	  arcs ==> [
 	       success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit)
 	  ]
