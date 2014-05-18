@@ -31,8 +31,9 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  type ==> recursive,
 	  embedded_dm ==> find(Mode,X,Locations,[-10,10],[0,-15],Category,Found,Rem_Posit,yes,false,false,Status),
 	  arcs ==> [
-	       success : [arrived_posit(Locations,Rem_Posit,Cp),execute('scripts/killvisual'),execute('scripts/personvisual')]
-	                 => get_curr_pos(up,Cp),
+	       success : [arrived_posit(Locations,Rem_Posit,Cp),
+	       	       	 say('i succeeded in locating the injured person'),execute('scripts/killvisual.sh')]
+	                 => get_curr_pos2(up,Cp),
 	       error : [arrived_posit(Locations,Rem_Posit,Cp)] => verify_error(Status,Cp)
 	  ]
 	],
@@ -41,7 +42,8 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	  id ==> verify_error(navigation_error, Curr_posit),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/killvisual'),execute('scripts/personvisual')] => get_curr_pos(down,Curr_posit)
+	       empty : [say('an assistance gesture has been detected'),execute('scripts/killvisual.sh'),execute('scripts/personvisual.sh'),say('attempting to get close to the injured person')]
+	       	       => get_curr_pos1(down,Curr_posit)
 	  ]
 	],
 
@@ -56,19 +58,27 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	[
 	  id ==> approach_sit(Pos,[X,Y,Z]),
 	  type ==> recursive,
-	  embedded_dm ==> find(person,W,[turn=>(10),turn=>(-10)],[-10,10],[0,-15],detect_with_approach,Found,Rem_Posit,yes,yes,yes,Status),
+	  embedded_dm ==> find(person,W,[turn=>(10),turn=>(-10)],[-10,10],[0,-15],detect_with_approach,Found,Rem_Posit,true,true,true,Status),
 	  arcs ==> [
-	       success : [(Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit))] => Sit,
+	       success : [execute('scripts/killvisual.sh')] => get_curr_pos2(Pos,[X,Y,Z]),
 	       error : [say('could you move closer to me please')] => approach_sit(Pos,[X,Y,Z])
 	  ]
 	],
 
 	% Guardar posicion actual
 	[  
-    	  id ==> get_curr_pos(Pos, Last_posit),
+    	  id ==> get_curr_pos1(Pos, Last_posit),
    	  type ==> positionxyz,
     	  arcs ==> [
       	       pos(X,Y,Z) : empty => approach_sit(Pos,[X,Y,Z])
+	  ]
+  	],
+
+	[  
+    	  id ==> get_curr_pos2(Pos, Last_posit),
+   	  type ==> positionxyz,
+    	  arcs ==> [
+      	       pos(X,Y,Z) : [(Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit))] => Sit
 	  ]
   	],
 
