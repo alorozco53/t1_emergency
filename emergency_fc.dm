@@ -1,4 +1,4 @@
-diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
+diag_mod(emergency_fc(Thing, Obj_locations, Pers_position, Status),
 [
         [
           id ==> is,
@@ -83,7 +83,8 @@ diag_mod(emergency_fc(Thing, Obj_locations, Pers_position),
 	% Final situation
 	[
           id ==> success,
-	  type ==> final
+	  type ==> final,
+	  diag_mod ==> emergency_fc(_,_,_,ok)
 	]
 ],
 

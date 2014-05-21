@@ -1,4 +1,4 @@
-diag_mod(emergency_event(Sit, Position),
+diag_mod(emergency_event(Sit, Position, Status),
 [
 
 	[
@@ -32,6 +32,7 @@ diag_mod(emergency_event(Sit, Position),
 	[
 	  id ==> success,
 	  type ==> final
+          diag_mod ==> emergency_event(_,_,ok)
 	]
 ],
 % Third argument

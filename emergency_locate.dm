@@ -1,4 +1,4 @@
-diag_mod(emergency_locate(Places, Locations, Messages),
+diag_mod(emergency_locate(Places, Locations, Messages, Status),
 [
 	[
 	   id ==> is,
@@ -86,11 +86,13 @@ diag_mod(emergency_locate(Places, Locations, Messages),
 	[
 	  id ==> up(Person_posit, Last_posit),
 	  type ==> final
+          diag_mod ==> emergency_locate(_,_,_,ok)
 	],
 
 	[
 	  id ==> down(Person_posit, Last_posit),
 	  type ==> final
+          diag_mod ==> emergency_locate(_,_,_,ok)
 	]
 
 ],
