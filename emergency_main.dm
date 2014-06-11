@@ -63,6 +63,7 @@ diag_mod(emergency_main,
 ],
 %Third argument: list of parameters
 [
-  entry ==> []
+  entry ==> [],
+  camera_error ==> false
 ]
 ).

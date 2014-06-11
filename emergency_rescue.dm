@@ -14,7 +14,7 @@ diag_mod(emergency_rescue(Entry_posit, Pers_posit),
 	  embedded_dm ==> find(person,X,Entry_posit,[-20,0,20],[-30,0,30],detect,[H|T],Remaining_Positions,false,false,false,Status),
 	  arcs ==> [
 	       success : [say('hello there i will guide you to the injured persons location')] => gps,
-	       error : [say('let me try to find the human aid again')] => fps
+	       error : [say('anybody out there in the entrance please come closer')] => fps
 	  ]
 	],
 
