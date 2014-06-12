@@ -1,41 +1,59 @@
 diag_mod(emergency_locate(Places, Locations, Messages, Status),
 [
-%       Start of main sequence of this task defining situations
-	[
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of main sequence of defining situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       [
 	   id ==> is,
 	   type ==> neutral,
 	   arcs ==> [
-	   	empty : empty => ms(Places,Messages)
+	   	empty : [set(locations,Locations),execute('scripts/upfollow.sh')] => ms(Places,Messages,fps(gesture,15,Locations))
 	   ]
 	],
 
 	[
-	  id ==> ms([], X),
+	  id ==> ms([], _, NextSit),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/upfollow.sh')] => fps(gesture,15)
+	       empty : empty => NextSit
 	  ]
 	],
 
 	[
-	  id ==> ms([H|T], [HM|TM]),
+	  id ==> ms([H|T], [HM|TM], NextSit),
 	  type ==> recursive,
 	  embedded_dm ==> move(H,Status),
 	  arcs ==> [
 	       success : [say(HM)] => ms(T,TM),
-	       error : [say('i will try to reach all the desired positions as soon as possible')] => ms([H|T],[HM|TM])
+	       error : [say('i will try to reach all the desired positions as soon as possible')] => ms([H|T],[HM|TM],NextSit)
 	  ]
 	],
 
 	[
-	  id ==> fps(Mode,Category),
-	  type ==> recursive,
-	  embedded_dm ==> find(Mode,X,Locations,[-10,10],[0,-15],Category,Found,Rem_Posit,yes,false,false,Status),
+          id ==> fps(_, _, []),
+	  type ==> neutral,
 	  arcs ==> [
-	       success : [arrived_posit(Locations,Rem_Posit,Cp),
-	       	       	 say('i succeeded in locating the injured person'),execute('scripts/killvisual.sh')]
-	                 => get_curr_pos2(up,Cp),
-	       error : [arrived_posit(Locations,Rem_Posit,Cp)] => verify_error_fps(Status,Cp)
+               empty : [say('i couldnt find the injured person let me try again'),get(locations,Locs)] => fps(gesture,15,Locs)
+	   ]
+        ],
+
+	[
+	  id ==> fps(Kind, Mode, [FirstLocation|RemLocations]),
+	  type ==> recursive,
+	  embedded_dm ==> move([FirstLocation],Status),
+	  arcs ==> [
+               empty : [say('looking for the injured person')] => scs(Kind,Mode,FirstLocation,RemLocations),
+	       error : empty => verify_error_fps(Status,Kind,Mode,FirstLocation,RemLocations)
+	  ]
+        ],
+	
+	[
+          id ==> scs(Kind, Mode, CurrLocation, RemLocations)
+	  type ==> recursive,
+	  embedded_dm ==> scan(Kind,X,[-10,10],[0,-15],Mode,Found,false,false,Status),
+	  arcs ==> [
+	       success : [say('i succeeded in locating the injured person'),execute('scripts/killvisual.sh')] => get_curr_pos2(up,CurrLocation),
+	       error : empty => verify_error_fps(Status,Kind,Mode,CurrLocation,RemLocations)
 	  ]
 	],
 
@@ -48,7 +66,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	       error : [say('could you move closer to me please')] => approach_sit(Pos,[X,Y,Z])
 	  ]
 	],
-	% Guardar posicion actual
+	% Save current position
 	[  
     	  id ==> get_curr_pos1(Pos, Last_posit),
    	  type ==> positionxyz,
@@ -61,7 +79,8 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
     	  id ==> get_curr_pos2(Pos, Last_posit),
    	  type ==> positionxyz,
     	  arcs ==> [
-      	       pos(X,Y,Z) : [(Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit))] => Sit
+      	       pos(X,Y,Z) : [(camera_error = true -> Sit = error([X,Y,Z],Last_posit,Pos) |
+	                     (Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit)))] => Sit
 	  ]
   	],
 	% Final situations
@@ -78,54 +97,64 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	],
 
 	[
-          id ==> camera_error(Person_posit, Last_posit, UpDown),
+          id ==> error(Person_posit, Last_posit, UpDown),
 	  type ==> final,
-	  diag_mod => emergency_locate(_,_,_,error)
+	  diag_mod => emergency_locate(_,_,_,camera_error)
         ],
-%        End of main sequence of situations
-%        Start of recover/verify_error situations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of main sequence of situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of recovery/verify_error situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	[
           id ==> verify_error_ms(navigation_error, Plac, Mess),
 	  type ==> neutral,
 	  arcs ==> [
-               empty : [say('there is a problem with my map, please fix my current posittion')] => ms(Plac,Mess)
+               empty : [say('there is a problem with my map, please fix my current position')] => ms(Plac,Mess)
 	  ]
         ],
 
 	[
-	  id ==> verify_error_fps(navigation_error, Curr_posit),
+	  id ==> verify_error_fps(navigation_error, _, _, Curr_posit, _),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('an assistance gesture has been detected'),execute('scripts/killvisual.sh'),execute('scripts/personvisual.sh'),say('attempting to get close to the injured person')]
-	       	       => get_curr_pos1(down,Curr_posit)
+	       empty : [say('my robotic intuition tells me the injured person is blocking my way'),execute('scripts/killvisual.sh'),
+	                execute('scripts/personvisual.sh'),say('attempting to get closer to the injured person')] => get_curr_pos1(down,Curr_posit)
 	  ]
 	],
 
 	[ 
-           id ==> verify_error_fps(lost_user, Curr_posit),
+           id ==> verify_error_fps(lost_user, _, _, Curr_posit, _),
 	   type ==> neutral,
 	   arcs ==> [
-                empty : [say('could you please move closer and see my camera directly please')] => get_curr_pos1(up,Curr_posit)
+                empty : [say('could you please move closer and see my camera directly please'),execute('scripts/killvisual.sh')] => get_curr_pos1(up,Curr_posit)
 	    ]
 	],
 
 	[
-	  id ==> verify_error_fps(Error, Curr_posit),
+           id ==> verify_error_fps(camera_error, _, _, Curr_posit, _),
+	   type ==> neutral,
+	   arcs ==> [
+                empty : [say('there is a problem with my camera i wil continue without using it'),set(camera_error,true)] => get_curr_pos1(up,Curr_posit)
+	   ]
+       ],
+
+       [
+	  id ==> verify_error_fps(Error, Kind, Mode, Curr_posit, RemLocations),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/killvisual.sh'),say('let me try to find the person again'),execute('scripts/upfollow.sh')] => fps(gesture,15)
+	       empty : [say('let me try to find the person again'),filter(Curr_posit,Locations,NewLocs),set(locations,NewLocs)] => fps(Kind,Mode,NewLocs)
 	  ]
-	]
-%       End of recover/verify_error situations
+       ]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of recovery/verify_error situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ],
 % List of local variables
 [
-	rem_posit ==> [],
-	pos ==> [],
-	last_posit ==> '',
-	found_posit ==> [],
 	camera_error ==> false,
-	num_attempts ==> 0
+	num_attempts ==> 0,
+	locations ==> []
 ]
 ).
 % End of dialogue
