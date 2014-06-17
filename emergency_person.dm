@@ -1,4 +1,4 @@
-diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Status),
+diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Error, Status),
 [
 	[
 	  id ==> is,
@@ -11,23 +11,31 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Status)
         [
           id ==> as(Prompt,LanguageModel),
           type ==> recursive,
-          embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Status),
+          embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Stat),
           arcs ==> [
                success : [(LanguageModel = yesno -> Sit = as('so what would you like me to bring you',LanguageToFetch)
-	       	       	  | otherwise -> Sit = fetch_carry(Output))]
+	       	       	  | otherwise -> Sit = fetch_carry(Output,Error))]
 	       		 => Sit,
-               error : [say('let me try again ')] => as(Prompt,LanguageModel)
+               error : [say('let me try again')] => as(Prompt,LanguageModel)
           ]
         ],
 
 	[
-	  id ==> fetch_carry(Thing),
+	  id ==> fetch_carry(Thing,false),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_fc(Thing,Obj_locations,Pers_position,Status),
+	  embedded_dm ==> emergency_fc(Thing,Obj_locations,Pers_position,Stat),
 	  arcs ==> [
 	       success : empty => success
 	  ]
 	],
+
+	[
+          id ==> fetch_carry(_,true),
+	  type ==> neutral,
+	  arcs ==> [
+               empty : [say('i cannot fetch your request since my camera is fucked')] => success
+	  ]
+        ],
 
 	% Final situation
 	[

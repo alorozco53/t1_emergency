@@ -22,35 +22,38 @@ diag_mod(emergency_main,
        [
           id ==> locate_pers,
           type ==> recursive,
-          embedded_dm ==> emergency_locate([p1,p2],[p2,p4,p3],['hello computer scientists my name is golem and i will go to the rescue','let me find the person'],Status),
+          embedded_dm ==> emergency_locate([p1,p2,p2],[p2,p4,p3],['hello computer scientists my name is golem and i will go to the rescue',
+	                                                          'i successfully arrived to the room','im ready to see what nobody can'],Status),
           arcs ==> [
-               up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit),
-	       down(Curr_posit, Last_posit) : [tiltv(-30)] => det_event(down,Curr_posit, Last_posit)
+               up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit,false),
+	       down(Curr_posit, Last_posit) : [tiltv(-30)] => det_event(down,Curr_posit,Last_posit,false),
+	       error(Curr_posit, Last_posit, Pers_posit) : empty => det_event(Pers_posit,Curr_posit,Last_posit,true)
 	  ]
       ],
 
       [
-          id ==> det_event(Sit, Curr_posit, Last_posit),
+          id ==> det_event(Sit, Curr_posit, Last_posit, Error),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_event(Sit,Last_posit,Status),
+	  embedded_dm ==> emergency_event(Sit,Last_posit,Error,Status),
 	  arcs ==> [
-               success : [say('alright')] => request_needs(Curr_posit)
+               success : [say('alright')] => request_needs(Curr_posit,Error),
+	       error : [say('please make sure my microphone can listen to you')] => request_needs(Curr_posit,Error)
           ]
       ],
 
       [
-          id ==> request_needs(Pers_posit),
+          id ==> request_needs(Pers_posit, Error),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[kitchen_table,fridge],Pers_posit,Status),
+	  embedded_dm ==> emergency_person(drink,[kitchen_table,fridge],Pers_posit,Error,Status),
 	  arcs ==> [
-               success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit)
+               success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit, Error)
           ]
       ],
 
       [
-          id ==> rescue_sit(Entry_posit, Pers_posit),
+          id ==> rescue_sit(Entry_posit, Pers_posit, Error),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_rescue(Entry_posit,Pers_posit,Status),
+	  embedded_dm ==> emergency_rescue(Entry_posit,Pers_posit,Error,Status),
 	  arcs ==> [
                success : [say('this is the end of my services so long and thanks for all the fish')] => fs
           ]
@@ -64,6 +67,5 @@ diag_mod(emergency_main,
 %Third argument: list of parameters
 [
   entry ==> [],
-  camera_error ==> false
 ]
 ).
