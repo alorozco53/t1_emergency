@@ -26,7 +26,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> move(H,Status),
 	  arcs ==> [
-	       success : [say(HM)] => ms(T,TM),
+	       success : [say(HM)] => ms(T,TM,NextSit),
 	       error : [say('i will try to reach all the desired positions as soon as possible')] => ms([H|T],[HM|TM],NextSit)
 	  ]
 	],
@@ -39,6 +39,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  arcs ==> [
                success : [say('i think everything is still going ok')] => das,
 	       error : empty => verify_error_das(Stat,fps(gesture,15,Locations))
+	  ]
 	],
 
 	% FIND INJURED PERSON SITUATIONS
@@ -55,13 +56,13 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> move([FirstLocation],Stat),
 	  arcs ==> [
-               empty : [say('looking for any sort of signal from the injured person')] => scs(Kind,Mode,FirstLocation,RemLocations),
+               success : [say('looking for any sort of signal from the injured person')] => scs(Kind,Mode,FirstLocation,RemLocations),
 	       error : empty => verify_error_fps(Stat,Kind,Mode,FirstLocation,RemLocations)
 	  ]
         ],
 	
 	[
-          id ==> scs(Kind, Mode, CurrLocation, RemLocations)
+          id ==> scs(Kind, Mode, CurrLocation, RemLocations),
 	  type ==> recursive,
 	  embedded_dm ==> scan(Kind,X,[-10,10],[0,-15],Mode,Found,false,false,Stat),
 	  arcs ==> [
@@ -87,7 +88,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
    	  type ==> positionxyz,
     	  arcs ==> [
       	       pos(X,Y,Z) : empty => approach_sit(Pos,[X,Y,Z])
-	  ]
+	 ]
   	],
 
 	[  
@@ -141,7 +142,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	],
 
 	[
-           id ==> verify_error_fps(camera_error, _),
+           id ==> verify_error_das(camera_error, _),
 	   type ==> neutral,
 	   arcs ==> [
                 empty : [say('there is a problem with my camera i wil continue without using it'),
@@ -150,7 +151,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
        ],
 
         [
-	   id ==> verify_error_fps(Error, NextSit),
+	   id ==> verify_error_das(Error, NextSit),
 	   type ==> neutral,
 	   arcs ==> [
 	       empty : [say('alright an accident has just occurred'),execute('scripts/killvisual.sh'),execute('scripts/upfollow.sh')] => NextSit
@@ -187,7 +188,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  id ==> verify_error_fps(Error, Kind, Mode, Curr_posit, RemLocations),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('let me try to find the person again'),filter(Curr_posit,Locations,NewLocs),set(locations,NewLocs)] => fps(Kind,Mode,NewLocs)
+	       empty : [say('let me try to find the person again'),filter(Curr_posit,RemLocations,NewLocs),set(locations,NewLocs)] => fps(Kind,Mode,NewLocs)
 	  ]
        ],
 
@@ -221,9 +222,9 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  id ==> verify_error_appsit(Error, Pos, [X,Y,Z]),
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [say('trying to get closer to the injured person again if you hear me please stare at my camera'),] => appsit(Pos,[X,Y,Z])
+	       empty : [say('trying to get closer to the injured person again if you hear me please stare at my camera')] => appsit(Pos,[X,Y,Z])
 	  ]
-       ],
+       ]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of recovery/verify_error situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -233,6 +234,6 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	camera_error ==> false,
 	num_attempts ==> 0,
 	locations ==> []
-]
+] 
 ).
 % End of dialogue

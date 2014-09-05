@@ -22,8 +22,8 @@ diag_mod(emergency_main,
        [
           id ==> locate_pers,
           type ==> recursive,
-          embedded_dm ==> emergency_locate([p1,p2,p2],[p2,p4,p3],['hello computer scientists my name is golem and i will go to the rescue',
-	                                                          'i successfully arrived to the room','im ready to see what nobody can'],Status),
+          embedded_dm ==> emergency_locate([p2,p3,p4],[arm_chair,sofa,big_table],['hello computer scientists my name is golem and i will go to the rescue',
+	  	      	  				          'i successfully arrived to the room','im ready to see what nobody can'],Status),
           arcs ==> [
                up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit,false),
 	       down(Curr_posit, Last_posit) : [tiltv(-30)] => det_event(down,Curr_posit,Last_posit,false),
@@ -44,7 +44,7 @@ diag_mod(emergency_main,
       [
           id ==> request_needs(Pers_posit, Error),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_person(drink,[kitchen_table,fridge],Pers_posit,Error,Status),
+	  embedded_dm ==> emergency_person(drink, [kitchen_table],Pers_posit,Error,Status),
 	  arcs ==> [
                success : [say('ok now i will go to the houses entrance'),get(entry,Entry)] => rescue_sit(Entry,Pers_posit, Error)
           ]
@@ -66,6 +66,6 @@ diag_mod(emergency_main,
 ],
 %Third argument: list of parameters
 [
-  entry ==> [],
+  entry ==> []
 ]
 ).

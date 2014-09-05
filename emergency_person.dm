@@ -40,7 +40,7 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Error, 
 	% Final situation
 	[
 	  id ==> success,
-	  type ==> final
+	  type ==> final,
           diag_mod ==> emergency_person(_,_,_,ok)
 	]
 ],
