@@ -5,7 +5,8 @@ diag_mod(emergency_main,
            id ==> is,	
            type ==> neutral,
            arcs ==> [
-                empty : [set(entry,[p1]),initSpeech,say('I will wait until the door is open')] => detect_door
+                empty : [apply(register_max_time(0,7,30)),set(entry,[p1]),initSpeech,
+		         say('I will wait until the door is open')] => detect_door
            ]
        ],
 
