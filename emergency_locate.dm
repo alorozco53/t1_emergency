@@ -8,7 +8,8 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	   id ==> is,
 	   type ==> neutral,
 	   arcs ==> [
-	   	empty : [set(locations,Locations),execute('scripts/personvisual.sh')] => ms(Places,Messages,das)
+	   	empty : [%apply(register_max_time(0,3,15),
+		         set(locations,Locations),execute('scripts/personvisual.sh')] => ms(Places,Messages,das)
 	   ]
 	],
 
@@ -37,7 +38,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> scan(person,X,[-10,10],[5,15],detect,Found,false,false,Stat),
 	  arcs ==> [
-               success : [say('i think everything is still going ok')] => das,
+               success : [say('i think everything is still going ok')] => check_time_das(Stat),
 	       error : empty => verify_error_das(Stat,fps(gesture,15,Locations))
 	  ]
 	],
@@ -67,7 +68,9 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  embedded_dm ==> scan(Kind,X,[-10,10],[0,-15],Mode,Found,false,false,Stat),
 	  arcs ==> [
 	       success : [say('i succeeded in locating the injured person'),execute('scripts/killvisual.sh')] => get_curr_pos2(up,CurrLocation),
-	       error : empty => verify_error_fps(Stat,Kind,Mode,CurrLocation,RemLocations)
+	       error : [get(counter2,Counter),(Counter < 3 -> Sit = verify_error_fps(Stat,Kind,Mode,CurrLocation,RemLocations) |
+	                otherwise -> [say('i could not find anyone if you hear me please approach me'),Sit = get_curr_pos1(up,CurrLocation)]),
+			inc(counter2,Counter)] => Sit
 	  ]
 	],
 
@@ -224,15 +227,30 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  arcs ==> [
 	       empty : [say('trying to get closer to the injured person again if you hear me please stare at my camera')] => appsit(Pos,[X,Y,Z])
 	  ]
-       ]
+       ],
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of recovery/verify_error situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Time constraint situations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       [
+          id ==> check_time_das(Stat),
+	  type ==> neutral,
+	  arcs ==> [
+               %empty : [(apply(fetch_time_over(_,_)) -> Sit = das | otherwise -> Sit = fps(gesture,15,Locations))] => Sit
+                empty : [get(counter1,Counter),(Counter < 5 -> Sit = das | otherwise ->
+		         [Sit = verify_error_das(Stat,fps(gesture,15,Locations)),say('maybe an accident has occured')]),
+			 inc(counter1,Counter)] => Sit
+	  ]
+       ]
 ],
 % List of local variables
 [
 	camera_error ==> false,
 	num_attempts ==> 0,
+	counter1 ==> 0,
+	counter2 ==> 0,
 	locations ==> []
 ] 
 ).
