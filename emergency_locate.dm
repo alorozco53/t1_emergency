@@ -98,7 +98,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
     	  id ==> get_curr_pos2(Pos, Last_posit),
    	  type ==> positionxyz,
     	  arcs ==> [
-      	       pos(X,Y,Z) : [(camera_error = true -> Sit = error([X,Y,Z],Last_posit,Pos) |
+      	       pos(X,Y,Z) : [(camera_error = true -> Sit = error([X,Y,Z],Last_posit,Pos) | otherwise ->
 	                     (Pos = up -> Sit = up([X,Y,Z],Last_posit) | otherwise -> Sit = down([X,Y,Z],Last_posit)))] => Sit
 	  ]
   	],
@@ -171,7 +171,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	  ]
 	],
 
-	[ 
+	[
            id ==> verify_error_fps(lost_user, _, _, Curr_posit, _),
 	   type ==> neutral,
 	   arcs ==> [

@@ -33,7 +33,7 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Error, 
           id ==> fetch_carry(_,true),
 	  type ==> neutral,
 	  arcs ==> [
-               empty : [say('i cannot fetch your request since my camera is fucked')] => success
+               empty : [say('i cannot fetch your request since my camera is fucked up')] => success
 	  ]
         ],
 
