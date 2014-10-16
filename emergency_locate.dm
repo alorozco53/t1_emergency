@@ -8,7 +8,7 @@ diag_mod(emergency_locate(Places, Locations, Messages, Status),
 	   id ==> is,
 	   type ==> neutral,
 	   arcs ==> [
-	   	empty : [%apply(register_max_time(0,3,15),
+	   	empty : [apply(check_time(ATime,ADay),[ATime,ADay]),
 		         set(locations,Locations),execute('scripts/personvisual.sh')] => ms(Places,Messages,das)
 	   ]
 	],
