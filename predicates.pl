@@ -24,7 +24,7 @@ verify_time_em(Limit_time) :-
 % Checks a 'move' error and decides the next situation in an emergency DM, also considering time limit
 verify_move_em(navigation_error, Next_situation, Limit_time, Robot_speech, NextSit) :-
 	(verify_time_em(Limit_time) ->
-	    Robot_speech = 'there is a problem with my map, please fix my current position',
+	    Robot_speech = 'my map says someone or something is blocking my way',
 	    NextSit = Next_situation
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',
@@ -43,7 +43,7 @@ verify_move_em(_, Next_situation, Limit_time, Robot_speech, NextSit) :-
 % Checks a 'scan' error and decides the next situation in an emergency DM, also considering time limit
 verify_scan_em(lost_user, Next_situation, Limit_time, Robot_speech, NextSit) :-
 	(verify_time_em(Limit_time) ->
-	    Robot_speech = 'i partially see someone in front of me',
+	    Robot_speech = 'could you please move closer to my camera please',
 	    NextSit = Next_situation
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',
@@ -67,7 +67,7 @@ verify_scan_em(not_detected, Next_situation, Limit_time, Robot_speech, NextSit) 
 	).
 verify_scan_em(_, Next_situation, Limit_time, Robot_speech, NextSit) :-
 	(verify_time_em(Limit_time) ->
-	    Robot_speech = 'alright an accident has just occurred',
+	    Robot_speech = 'i see someone in front of me',
 	    NextSit = Next_situation
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',
@@ -78,7 +78,7 @@ verify_scan_em(_, Next_situation, Limit_time, Robot_speech, NextSit) :-
 % Checks a 'find' error and decides the next situation in an emergency DM, also considering time limit
 verify_find_em(navigation_error, Next_situation, Limit_time, Robot_speech, NextSit) :-
 	(verify_time_em(Limit_time) ->
-	    Robot_speech = 'alright i found someone in my way',
+	    Robot_speech = 'my map says someone or something is blocking my way',
 	    NextSit = Next_situation
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',

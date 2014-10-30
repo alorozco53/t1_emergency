@@ -23,7 +23,7 @@ diag_mod(emergency_main,
        [
           id ==> locate_pers,
           type ==> recursive,
-          embedded_dm ==> emergency_locate([p2,p3,p4],[arm_chair,sofa,big_table],['hello computer scientists my name is golem and i will go to the rescue',
+          embedded_dm ==> emergency_locate(180,[p2,p3,p4],[arm_chair,sofa,big_table],['hello computer scientists my name is golem and i will go to the rescue',
 	  	      	  				          'i successfully arrived to the room','im ready to see what nobody can'],Status),
           arcs ==> [
                up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit,false),
@@ -35,7 +35,7 @@ diag_mod(emergency_main,
       [
           id ==> det_event(Sit, Curr_posit, Last_posit, Error),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_event(Sit,Last_posit,Error,Status),
+	  embedded_dm ==> emergency_event(60,Sit,Last_posit,Error,Status),
 	  arcs ==> [
                success : [say('alright')] => request_needs(Curr_posit,Error),
 	       error : [say('please make sure my microphone can listen to you')] => request_needs(Curr_posit,Error)
