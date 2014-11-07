@@ -148,12 +148,12 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 ],
 % List of local variables
 [
-	camera_error ==> false,
-	num_attempts ==> 0,
-	counter1 ==> 0,
-	counter2 ==> 0,
-	locations ==> [],
-	limit_time ==> 0
+	camera_error => false,
+	num_attempts => 0,
+	counter1 => 0,
+	counter2 => 0,
+	locations => [],
+	limit_time => 0
 ] 
 ).
 % End of dialogue

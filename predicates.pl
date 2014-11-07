@@ -143,7 +143,7 @@ verify_ask_em(error, Next_situation, Limit_time, Robot_speech, NextSit) :-
 	    Robot_speech = 'my robotic intuition says my time is over doing this',
 	    NextSit = fs(time_is_up)
 	).
-verify_ask_em(_, NextSit, _, ['alright'], NextSit).
+verify_ask_em(_, NextSit, _, 'alright', NextSit).
 
 % verify_take_em(Error, Locations_list, Current_used_arm, Limit_time, Robot_speech, NextSit)
 % Checks a 'take' error and decides the next situation in an emergency DM, also considering time limit
@@ -184,4 +184,50 @@ verify_approach_person_ckp(_, Next_situation, Limit_time, Robot_speech, NextSit)
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',
 	    NextSit = fs(time_is_up)
+	).
+
+% verify_see_person__ckp(Error, Next_situation, Limit_time, Counter, Robot_speech, NextSit)
+% Checks an 'see_person' error and decides the next situation in a cocktail party DM, also considering time limit
+verify_see_person_ckp(ok, Next_situation, Limit_time, _, Robot_speech, NextSit) :-
+	(verify_time_em(Limit_time) ->
+	    Robot_speech = 'i successfully see you',
+	    NextSit = Next_situation
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says my time is over doing this',
+	    NextSit = fs(time_is_up)
+	).
+
+verify_see_person_ckp(_, Next_situation, Limit_time, Counter, Robot_speech, NextSit) :-
+	(verify_time_em(Limit_time) ->
+	    Robot_speech = 'see my cameraaaaaaaa please',
+	    NextSit = Next_situation
+	| 5 =< Counter ->
+	    Robot_speech = 'i couldnt memorize your face',
+	    NextSit = ask_order
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says my time is over doing this',
+	    NextSit = fs(time_is_up)
+	).
+
+% verify_psearch_ckp(Error, Next_situation, Limit_time, Counter, Robot_speech, NextSit)
+% Checks a 'party_psearch' error and decides the next situation in a cocktail party DM
+verify_psearch_ckp(time_is_up, Next_situation, Counter, Robot_speech, Action, NextSit) :-
+	(Counter =< 3 ->
+	    Robot_speech = 'next person please stand in front of me',
+	    NextSit = busca_persona_para_pedido
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says im done with all the people',
+	    NextSit = Next_situation
+	),
+	Action = say('alright').
+
+verify_psearch_ckp(camera_error, Next_situation, Counter, Robot_speech, Action, NextSit) :-
+	(Counter =< 3 ->
+	    Robot_speech = 'next person please stand in front of me',
+	    NextSit = busca_persona_para_pedido,
+	    Action = set(camera_error,true)
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says im done with all the people',
+	    NextSit = Next_situation,
+	    Action = set(camera_error,true)
 	).
