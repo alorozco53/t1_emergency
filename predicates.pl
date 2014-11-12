@@ -209,25 +209,43 @@ verify_see_person_ckp(_, Next_situation, Limit_time, Counter, Robot_speech, Next
 	    NextSit = fs(time_is_up)
 	).
 
-% verify_psearch_ckp(Error, Next_situation, Limit_time, Counter, Robot_speech, NextSit)
+% verify_psearch_ckp(Error, Next_situation, Counter, Robot_speech, Action, NextSit)
 % Checks a 'party_psearch' error and decides the next situation in a cocktail party DM
-verify_psearch_ckp(time_is_up, Next_situation, Counter, Robot_speech, Action, NextSit) :-
+verify_psearch_ckp(time_is_up, ClientList, DrinkList, PositList, Counter, Robot_speech, Action, NextSit) :-
 	(Counter =< 3 ->
 	    Robot_speech = 'next person please stand in front of me',
-	    NextSit = busca_persona_para_pedido
+	    NextSit = busca_persona_para_pedido(ClientList,DrinkList,PositList)
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says im done with all the people',
-	    NextSit = Next_situation
+	    NextSit = busca_por_objetos(ClientList,DrinkList,PositList)
 	),
 	Action = say('alright').
 
 verify_psearch_ckp(camera_error, Next_situation, Counter, Robot_speech, Action, NextSit) :-
 	(Counter =< 3 ->
 	    Robot_speech = 'next person please stand in front of me',
-	    NextSit = busca_persona_para_pedido,
-	    Action = set(camera_error,true)
+	    NextSit = busca_persona_para_pedido(ClientList,DrinkList,PositList)
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says im done with all the people',
-	    NextSit = Next_situation,
-	    Action = set(camera_error,true)
+	    NextSit = busca_por_objetos(ClientList,DrinkList,PositList)
+	),
+	Action = set(camera_error,true).
+
+% verify_take_ckp(Error, Object, Current_used_arm, Limit_time, Robot_speech, NextSit)
+% Checks a 'take' error and decides the next situation in an emergency DM, also considering time limit
+verify_take_ckp(not_grasped, Object, CurrArm, Limit_time, Robot_speech, NextSit) :-
+	(verify_time_em(Limit_time) ->
+	    Robot_speech = 'i didnt take the object',
+	    (CurrArm = right -> NextSit = ts(Object,left) | otherwise -> NextSit = ts(Object,right))
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says my time is over doing this',
+	    NextSit = error
+	).
+verify_take_ckp(_, Object, _, Limit_time, Robot_speech, NextSit) :-
+	(verify_time_em(Limit_time) ->
+	    Robot_speech = 'i cannot see the object let me try to fix my position',
+	    NextSit = success
+	| otherwise ->
+	    Robot_speech = 'my robotic intuition says my time is over doing this',
+	    NextSit = success
 	).
