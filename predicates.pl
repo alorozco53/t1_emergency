@@ -149,7 +149,7 @@ verify_ask_em(_, NextSit, _, 'alright', NextSit).
 % Checks a 'take' error and decides the next situation in an emergency DM, also considering time limit
 verify_take_em(not_grasped, Obj_list, CurrArm, Limit_time, Robot_speech, NextSit) :-
 	(verify_time_em(Limit_time) ->
-	    Robot_speech = 'i didnt take the object',
+	    Robot_speech = 'i didnt take the object let me try again',
 	    (CurrArm = right -> NextSit = ts(Obj_list,left) | otherwise -> NextSit = ts(Obj_list,right))
 	| otherwise ->
 	    Robot_speech = 'my robotic intuition says my time is over doing this',

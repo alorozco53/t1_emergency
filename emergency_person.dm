@@ -23,7 +23,7 @@ diag_mod(emergency_person(LanguageToFetch, Obj_locations, Pers_position, Error, 
 	[
 	  id ==> fetch_carry(Thing,false),
 	  type ==> recursive,
-	  embedded_dm ==> emergency_fc(Thing,Obj_locations,Pers_position,Stat),
+	  embedded_dm ==> emergency_fc(180,Thing,Obj_locations,Pers_position,Stat),
 	  arcs ==> [
 	       success : empty => success
 	  ]
