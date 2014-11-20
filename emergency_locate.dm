@@ -8,7 +8,7 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	   id ==> is,
 	   type ==> neutral,
 	   arcs ==> [
-	   	empty : [apply(generate_time_limit_em(Time,LimitTime),LimitTime),set(limit_time,LimitTime),
+	   	empty : [apply(generate_limit_time_em(T,L),[Time,LimitTime]),set(limit_time,LimitTime),
 		         set(locations,Locations),execute('scripts/personvisual.sh')] => ms(Places,Messages,das)
 	   ]
 	],
@@ -27,9 +27,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> move(H,Stat),
 	  arcs ==> [
-	       success : [get(limit_time,LimTime),apply(verify_move_em(Stat,ms(T,TM,NextSit),LimTime,RS,NS),[RS,NS])
+	       success : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms(T,TM,NextSit),LimTime,RS,NS])
 			  say(RS)] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_move_em(Stat,ms([H|T],[HM|TM],NextSit),LimTime,RS,NS),[RS,NS])
+	       error : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms([H|T],[HM|TM],NextSit),LimTime,RS,NS])
 			  say([RS,'i will try to reach the desired position as soon as possible'])] => NS
 	  ]
 	],
@@ -40,9 +40,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> scan(person,X,[-10,10],[5,15],detect,Found,false,false,Stat),
 	  arcs ==> [
-               success : [get(limit_time,LimTime),apply(verify_scan_em(Stat,das,LimTime,RS,NS),[RS,NS]),
+               success : [get(limit_time,LimTime),apply(verify_scan_em(A,B,C,D,E),[Stat,das,LimTime,RS,NS]),
 			  say([RS,'i think everything is still going ok'])] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_scan_em(Stat,fps(gesture,15,Locations),LimTime,RS,NS),[RS,NS]),
+	       error : [get(limit_time,LimTime),apply(verify_scan_em(A,B,C,D,E),[Stat,fps(gesture,15,Locations),LimTime,RS,NS]),
 			  say(RS)] => NS
 	  ]
 	],
@@ -62,9 +62,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  prog ==> [say('alright im about to search for the injured person')],
 	  embedded_dm ==> move([FirstLocation],Stat),
 	  arcs ==> [
-               success : [get(limit_time,LimTime),apply(verify_move_em(Stat,scs(Kind,Mode,FirstLocation,RemLocations),LimTime,RS,NS),[RS,NS]),
+               success : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,scs(Kind,Mode,FirstLocation,RemLocations),LimTime,RS,NS]),
 			  say([RS,say('looking for any sort of signal from the injured person')])] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_move_em(Stat,get_curr_pos1(down,FirstLocation),LimTime,RS,NS),[RS,NS]),
+	       error : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,get_curr_pos1(down,FirstLocation),LimTime,RS,NS]),
 			say([RS,'my robotic intution tells me the injured person is just in front of me'])] => NS
 	  ]
         ],
@@ -74,9 +74,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> scan(Kind,X,[-10,10],[0,-15],Mode,Found,false,false,Stat),
 	  arcs ==> [
-	       success : [get(limit_time,LimTime),apply(verify_scan_em(Stat,get_curr_pos2(up,CurrLocation),LimTime,RS,NS),[RS,NS]),
+	       success : [get(limit_time,LimTime),apply(verify_scan_em(A,B,C,D,E),[Stat,get_curr_pos2(up,CurrLocation),LimTime,RS,NS]),
 			  say([RS,'i succeeded in locating the injured person']),execute('scripts/killvisual.sh')] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_scan_em(Stat,scs(Kind,Mode,CurrLocation,RemLocations),LimTime,RS,NS),[RS,NS]),
+	       error : [get(limit_time,LimTime),apply(verify_scan_em(A,B,C,D,E),[Stat,scs(Kind,Mode,CurrLocation,RemLocations),LimTime,RS,NS]),
 			say([RS,'i succeeded in locating the injured person'])] => NS
 	  ]
 	],
@@ -87,9 +87,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> find(person,W,[turn=>(10),turn=>(-10)],[-10,10],[0,-15],detect_with_approach,Found,Rem_Posit,true,true,true,Stat),
 	  arcs ==> [
-	       success : [get(limit_time,LimTime),apply(verify_find_em(Stat,get_curr_pos2(Pos,[X,Y,Z]),LimTime,RS,NS),[RS,NS]),
+	       success : [get(limit_time,LimTime),apply(verify_find_em(A,B,C,D,E),[Stat,get_curr_pos2(Pos,[X,Y,Z]),LimTime,RS,NS]),
 			  say(RS),execute('scripts/killvisual.sh')] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_find_em(Stat,get_curr_pos2(Pos,[X,Y,Z]),LimTime,RS,NS),[RS,NS]),
+	       error : [get(limit_time,LimTime),apply(verify_find_em(A,B,C,D,E),[Stat,get_curr_pos2(Pos,[X,Y,Z]),LimTime,RS,NS]),
 			say([RS,'could you move closer to me please'])] => NS
 	  ]
 	],

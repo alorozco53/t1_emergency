@@ -4,7 +4,7 @@ diag_mod(emergency_event(Time, Sit, Position, Error, Status),
 	  id ==> is,
 	  type ==> neutral,
 	  arcs ==> [
-	       empty : [execute('scripts/inicia_reporte.sh'),apply(generate_time_limit_em(Time,LimitTime),LimitTime),set(limit_time,LimitTime),
+	       empty : [execute('scripts/inicia_reporte.sh'),apply(generate_limit_time_em(T,L),[Time,LimitTime]),set(limit_time,LimitTime),
 	                (Sit = up -> Qs = 'hello there can you walk on your own' | otherwise -> Qs = 'hello there can you move your legs')]
 		=> as(Qs,yesno)
 	  ]
@@ -13,10 +13,10 @@ diag_mod(emergency_event(Time, Sit, Position, Error, Status),
         [
           id ==> as(Prompt,LanguageModel),
           type ==> recursive,
-          embedded_dm ==> ask(Prompt, LanguageModel, false, [], Output, Stat),
+          embedded_dm ==> ask(Prompt,LanguageModel,false,[],Output,Stat),
           arcs ==> [
                success : [(Output = no -> Resp = inmovil | otherwise -> Resp = salio)] => grs(Resp),
-               error : [get(limit_time,LimTime),apply(verify_ask_em(Stat,as(Prompt,LanguageModel),LimTime,RS,NS),[RS,NS])
+               error : [get(limit_time,LimTime),apply(verify_ask_em(A,B,C,D,E),[Stat,as(Prompt,LanguageModel),LimTime,RS,NS])
                         say(RS)] => NS
           ]
         ],
