@@ -40,7 +40,7 @@ diag_mod(emergency_fc(Time, Thing, Obj_locations, Pers_position, Status),
 	       success : [get(limit_time,LimTime),apply(verify_find_em(A,B,C,D,E),[Stat,ts(FH,right),LimTime,RS,NS]),
 			  say([RS,'i succeeded in finding the object i will grab it now']),set(not_taken,0)] => NS,
 	       error : [get(limit_time,LimTime),apply(verify_find_em(A,B,C,D,E),[Stat,fos(Obj_locs),LimTime,RS,NS]),
-			say([RS,'i did not found the object let me try again']),] => NS
+			say([RS,'i did not found the object let me try again'])] => NS
 	  ]
 	],
 

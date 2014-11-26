@@ -27,9 +27,9 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	  type ==> recursive,
 	  embedded_dm ==> move(H,Stat),
 	  arcs ==> [
-	       success : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms(T,TM,NextSit),LimTime,RS,NS])
+	       success : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms(T,TM,NextSit),LimTime,RS,NS]),
 			  say(RS)] => NS,
-	       error : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms([H|T],[HM|TM],NextSit),LimTime,RS,NS])
+	       error : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,ms([H|T],[HM|TM],NextSit),LimTime,RS,NS]),
 			  say([RS,'i will try to reach the desired position as soon as possible'])] => NS
 	  ]
 	],
@@ -59,11 +59,10 @@ diag_mod(emergency_locate(Time, Places, Locations, Messages, Status),
 	[
 	  id ==> fps(Kind, Mode, [FirstLocation|RemLocations]),
 	  type ==> recursive,
-	  prog ==> [say('alright im about to search for the injured person')],
 	  embedded_dm ==> move([FirstLocation],Stat),
 	  arcs ==> [
                success : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,scs(Kind,Mode,FirstLocation,RemLocations),LimTime,RS,NS]),
-			  say([RS,say('looking for any sort of signal from the injured person')])] => NS,
+			  say([RS,'looking for any sort of signal from the injured person'])] => NS,
 	       error : [get(limit_time,LimTime),apply(verify_move_em(A,B,C,D,E),[Stat,get_curr_pos1(down,FirstLocation),LimTime,RS,NS]),
 			say([RS,'my robotic intution tells me the injured person is just in front of me'])] => NS
 	  ]

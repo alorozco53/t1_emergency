@@ -23,7 +23,7 @@ diag_mod(emergency_main,
        [
           id ==> locate_pers,
           type ==> recursive,
-          embedded_dm ==> emergency_locate(180,[p2,p3,p4],[arm_chair,sofa,big_table],['hello computer scientists my name is golem and i will go to the rescue',
+          embedded_dm ==> emergency_locate(180,[p1,p2,p3],[p2,p3,big_table],['hello computer scientists my name is golem and i will go to the rescue',
 	  	      	  				          'i successfully arrived to the room','im ready to see what nobody can'],Status),
           arcs ==> [
                up(Curr_posit, Last_posit) : empty => det_event(up,Curr_posit,Last_posit,false),
